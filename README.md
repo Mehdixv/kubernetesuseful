@@ -8,7 +8,8 @@ The `delete_completed_pods.sh` script iterates through each completed pod and de
 
 ```bash
 # One-liner command (commented out):
-# kubectl get pods --field-selector=status.phase=Succeeded -o name | xargs kubectl delete
+# kubectl get pods -n $NAMESPACE --field-selector status.phase=Succeeded -o jsonpath="{.items[*].metadata.name}" | \tr ' ' '\n' | xargs -r -n 1 -I{} kubectl delete pod {} -n $NAMESPACE
+
 ```
 
 ## Delete Duplicate Pods
@@ -17,7 +18,9 @@ The `delete_duplicate_pods.sh` script identifies and deletes duplicate pod names
 
 ```bash
 # One-liner command (commented out):
-# kubectl get pods --all-namespaces -o jsonpath="{..metadata.name}" | tr -s '[[:space:]]' '\n' | sort | uniq -d | xargs -I {} kubectl delete pod {} -n {}
+# kubectl get pods -n $NAMESPACE -o custom-columns=NAME:.metadata.name,STATUS:.status.phase --no-headers | \awk '{print $1}' | sort | uniq -d | xargs -r -n 1 -I{} kubectl delete pod {} -n $NAMESPACE
+
+
 ```
 
 ## Delete Evicted Pods
@@ -26,7 +29,13 @@ The `delete_evicted_pods.sh` script filters and deletes pods with the `Evicted` 
 
 ```bash
 # One-liner command (commented out):
-# kubectl get pods --field-selector=status.phase=Failed -o name | xargs kubectl delete
+# kubectl get pods -n $NAMESPACE --field-selector status.phase=Failed -o jsonpath="{.items[?(@.status.reason=='Evicted')].metadata.name}" | \ tr ' ' '\n' | sort | uniq | xargs -r -n 1 -I{} kubectl delete pod {} -n $NAMESPACE
 ```
 
 Feel free to uncomment the one-liner commands if you prefer a more compact approach, but using the script approach can help handle large lists of pods more reliably.
+
+```bash
+# 1) chmod +x Script.sh
+# 2) Run: ./delete-completed-pods.sh
+```
+
