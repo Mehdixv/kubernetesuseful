@@ -33,9 +33,9 @@ The `delete_evicted_pods.sh` script filters and deletes pods with the `Evicted` 
 ```
 
 Feel free to uncomment the one-liner commands if you prefer a more compact approach, but using the script approach can help handle large lists of pods more reliably.
-
+TO  make it executable, and run it 
 ```bash
-# 1) chmod +x Script.sh
-# 2) Run: ./delete-completed-pods.sh
+# 1) chmod +x Script.sh   //Make it executable
+# 2) Run: ./Scripts.sh    // Run it 
 ```
 
